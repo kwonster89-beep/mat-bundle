@@ -1,0 +1,287 @@
+{
+  "updated": "2026-11-26",
+  "notice": "补发配件明细\n维修所需的部件准备周期不能太长。\n请不要等到大批量生产,单独准备并发送。",
+  "rows": [
+    {
+      "product": "Y174",
+      "parts": "[503-Right Pedal Strap]\t10\n[504-Left Pedal Strap]\t10\n[83-1-Fly wheel pulley]\t10\n[83-2- Clutch bearing]\t25\n[83-3-16003 Bearing]\t50\n[65-Left Foot Pedal ?-1]\t10\n[66-Right Foot Pedal ?-1]\t10\n[69-Left Crank ?-1]\t10\n[70-Right Crank ?-1]\t10\n[76-Bearing 6004 ?-2]\t10\n[83-Flywheel ?-1]\t10\n[88-Bearing ?-4]\t30\n[82-Belt ?-1]\t30",
+      "date": "25.12.10",
+      "status": "装在 EG-704W-014",
+      "note": "",
+      "ko": "",
+      "done": true,
+      "hl": false,
+      "images": []
+    },
+    {
+      "product": "908R",
+      "parts": "[3-Front Handlebar Post] 5\n[84-Flywheel] 10\n[505-Clutch bearing 带轴承] 50\n[70-Left Crank] 20\n[71-Right Crank] 20\n[79-Belt Pulley with Crank] 20\n[57-Handlebar Foam Gripφ27*φ33*410] 30",
+      "date": "26.03.18",
+      "status": "购买配件\n装在 EG-704W-014",
+      "note": "只剩 [3-Front Handlebar Post] 5个",
+      "ko": "",
+      "done": false,
+      "hl": true,
+      "images": []
+    },
+    {
+      "product": "RW400",
+      "parts": "[16-Idler wheel 039*69] 30个\n[34-Protect band] 10个\n[58-Belt wheel set] 10个",
+      "date": "26.05.07",
+      "status": "没发\n[34-Protect band] 10个\n[58-Belt wheel set] 10个",
+      "note": "[34-Protect band] 10个\n[58-Belt wheel set] 10个",
+      "ko": "",
+      "done": false,
+      "hl": true,
+      "images": []
+    },
+    {
+      "product": "704W",
+      "parts": "【95-轴承座】 + 【91-轴承】 配套 30个",
+      "date": "26.08.20",
+      "status": "",
+      "note": "装在 704W-014",
+      "ko": "",
+      "done": true,
+      "hl": false,
+      "images": [
+        "img/p-r22-c4-1.jpg",
+        "img/p-r22-c6-4.jpg"
+      ]
+    },
+    {
+      "product": "Y174",
+      "parts": "坐垫总成 20套",
+      "date": "26.08.11",
+      "status": "",
+      "note": "装在 704W-016",
+      "ko": "",
+      "done": true,
+      "hl": false,
+      "images": [
+        "img/p-r23-c4-3.jpg"
+      ]
+    },
+    {
+      "product": "503D",
+      "parts": "EG-503D-002柜子没发出配件\n\n[4-Rear Stabilizer-1] 1个\n[12-Right Handlebar-1] 2个",
+      "date": "26.08.17",
+      "status": "",
+      "note": "[4-Rear Stabilizer-1] 1个\n[12-Right Handlebar-1] 2个",
+      "ko": "",
+      "done": false,
+      "hl": true,
+      "images": [
+        "img/p-r24-c4-2.jpg"
+      ]
+    },
+    {
+      "product": "704W",
+      "parts": "",
+      "date": "26.08.21",
+      "status": "",
+      "note": "装在 EG-906WGFC-044 已入库",
+      "ko": "",
+      "done": true,
+      "hl": false,
+      "images": [
+        "img/p-r25-c2-5.jpg",
+        "img/p-r25-c4-6.jpg"
+      ]
+    },
+    {
+      "product": "503D",
+      "parts": "【45 - Pulley p70*p29*50】20个",
+      "date": "26.09.03",
+      "status": "",
+      "note": "EG-906WGFC-046 入库",
+      "ko": "",
+      "done": true,
+      "hl": false,
+      "images": [
+        "img/p-r26-c4-7.jpg"
+      ]
+    },
+    {
+      "product": "704W",
+      "parts": "[53-Seat Cushion-1] 2个\n[54-Back Cushion-1] 2个",
+      "date": "26.09.28",
+      "status": "",
+      "note": "EG-906WGFC-046 入库",
+      "ko": "",
+      "done": true,
+      "hl": false,
+      "images": [
+        "img/p-r27-c4-8.jpg",
+        "img/p-r27-c4-9.jpg"
+      ]
+    },
+    {
+      "product": "713U",
+      "parts": "[17-Tension Control Knob -1] 20个，单价：15.7元/个\n[36-Seat Cushion -1] 20个,单价：21.5元/个\n[66-Left Crank-1] 20个，单价：13元/个\n[67-Right Crank-1] 20个，单价：13元/个",
+      "date": "26.09.29",
+      "status": "",
+      "note": "EG-906WGFC-046 入库",
+      "ko": "",
+      "done": true,
+      "hl": false,
+      "images": []
+    },
+    {
+      "product": "XBIKE",
+      "parts": "#80 Left crank",
+      "date": "24.11.06",
+      "status": "已入库 24.12.10",
+      "note": "",
+      "ko": "",
+      "done": true,
+      "hl": false,
+      "images": []
+    },
+    {
+      "product": "XBIKE",
+      "parts": "#81 Right crank",
+      "date": "24.11.06",
+      "status": "已入库 24.12.10",
+      "note": "",
+      "ko": "",
+      "done": true,
+      "hl": false,
+      "images": []
+    },
+    {
+      "product": "XBIKE",
+      "parts": "#77 Belt 240 PJ4",
+      "date": "24.11.06",
+      "status": "已入库 24.12.10",
+      "note": "",
+      "ko": "",
+      "done": true,
+      "hl": false,
+      "images": []
+    },
+    {
+      "product": "908R",
+      "parts": "#84 Flywheel",
+      "date": "24.11.06",
+      "status": "已入库 24.12.10",
+      "note": "",
+      "ko": "",
+      "done": true,
+      "hl": false,
+      "images": []
+    },
+    {
+      "product": "908R",
+      "parts": "#57 Handlebar Foam Gripφ27*φ33*410",
+      "date": "24.11.06",
+      "status": "已入库 24.12.10",
+      "note": "",
+      "ko": "",
+      "done": true,
+      "hl": false,
+      "images": []
+    },
+    {
+      "product": "908R",
+      "parts": "#83 Belt PJ440",
+      "date": "24.11.06",
+      "status": "已入库 24.12.10",
+      "note": "",
+      "ko": "",
+      "done": true,
+      "hl": false,
+      "images": []
+    },
+    {
+      "product": "7068",
+      "parts": "#1 连接管",
+      "date": "24.12.31",
+      "status": "已入库 25.02.06 EG-704-088",
+      "note": "",
+      "ko": "",
+      "done": true,
+      "hl": false,
+      "images": [
+        "img/p-r9-c6-0.jpg"
+      ]
+    },
+    {
+      "product": "704R紫色",
+      "parts": "坐垫",
+      "date": "24.12.13",
+      "status": "已入库 25.02.06 EG-704-088",
+      "note": "",
+      "ko": "704 라벤더 안장",
+      "done": true,
+      "hl": false,
+      "images": []
+    },
+    {
+      "product": "704R",
+      "parts": "黑色，灰色 8档带数字的微调",
+      "date": "25.01.07",
+      "status": "已入库 25.02.06 EG-704-088",
+      "note": "",
+      "ko": "704 8단계 강약조절기 숫자 추가 부속 (그레이,블랙)",
+      "done": true,
+      "hl": false,
+      "images": []
+    },
+    {
+      "product": "Y171U",
+      "parts": "皮带 500J",
+      "date": "25.01.09",
+      "status": "已入库 25.02.06 EG-704-088",
+      "note": "",
+      "ko": "Y171U 500 벨트",
+      "done": true,
+      "hl": false,
+      "images": []
+    },
+    {
+      "product": "XBIKE",
+      "parts": "皮带 230J",
+      "date": "25.01.09",
+      "status": "已入库 25.02.06 EG-704-088",
+      "note": "",
+      "ko": "슬릭플렉스 230 벨트",
+      "done": true,
+      "hl": false,
+      "images": []
+    },
+    {
+      "product": "704R紫色",
+      "parts": "左右链罩",
+      "date": "24.12.31",
+      "status": "已入库",
+      "note": "",
+      "ko": "704 라벤더 체인커버",
+      "done": true,
+      "hl": false,
+      "images": []
+    },
+    {
+      "product": "Y174R",
+      "parts": "左右链罩",
+      "date": "25.01.07",
+      "status": "已入库",
+      "note": "",
+      "ko": "Y174R 체인커버",
+      "done": true,
+      "hl": false,
+      "images": []
+    },
+    {
+      "product": "704R",
+      "parts": "滑管塞",
+      "date": "25.02.05",
+      "status": "",
+      "note": "",
+      "ko": "",
+      "done": true,
+      "hl": false,
+      "images": []
+    }
+  ]
+}
