@@ -118,7 +118,7 @@
       <div style="font-size:12px;color:var(--sub);max-width:380px">숫자를 고친 뒤 위의 "저장"을 눌러주세요. 기준일 이후(당일 포함) 보낸 기록과 선적된 PI만 계산에 들어가요.</div>
     </div>
     <div class="stock" id="stockCards"></div>
-    <div class="hint"><span class="ko">계산(묶음 단위, 기구 1대 = 1묶음): 시작 수량 + 보낸 수량 − 선적일(ETD)이 지난 PI의 기구 대수. 선적일이 아직 안 온 PI는 "선적 예정"으로 따로 보여줘요. PI 목록은 무역허브 발주 관리에 남아 있는(입고 완료 전) PI 중 기준일 이후 것만 가져와요.</span><span class="cn">计算（按捆，每台1捆）：期初数量 + 寄出数量 − 已过出货日(ETD)的PI台数。出货日未到的PI单独显示为“待出货”。</span></div>
+    <div class="hint"><span class="ko">계산(묶음 단위, 기구 1대 = 1묶음): 시작 수량 + 보낸 수량 − 선적일(ETD)이 지난 PI의 기구 대수. 선적일이 아직 안 온 PI는 "선적 예정"으로 따로 보여줘요. PI 목록은 무역허브 발주 관리에 남아 있는(입고 완료 전) PI 중 기준일 이후 것만 가져와요.</span><span class="cn">计算（按套，每台一套）：期初数量 + 寄出数量 − 已过出货日(ETD)的PI台数。出货日未到的PI单独显示为“待出货”。</span></div>
 
 
     <h2>보낸 기록 <span class="cn">寄出记录</span> <button class="btn edit-only" id="addSent" style="margin-left:8px">+ 추가</button></h2>
@@ -126,7 +126,7 @@
       <thead><tr>
         <th><span class="ko">보낸 날짜</span><span class="cn">寄出日期</span></th>
         <th><span class="ko">매트 묶음</span><span class="cn">垫子规格</span></th>
-        <th><span class="ko">수량(묶음)</span><span class="cn">数量(捆)</span></th>
+        <th><span class="ko">수량(묶음)</span><span class="cn">数量(套)</span></th>
         <th><span class="ko">메모</span><span class="cn">备注</span></th>
         <th class="edit-only"></th>
       </tr></thead>
@@ -151,7 +151,7 @@
         <th style="text-align:left"><span class="ko">기구</span><span class="cn">产品</span></th>
         <th><span class="ko">대수</span><span class="cn">台数</span></th>
         <th><span class="ko">매트 묶음</span><span class="cn">垫子规格</span></th>
-        <th><span class="ko">차감 묶음</span><span class="cn">扣减捆数</span></th>
+        <th><span class="ko">차감 묶음</span><span class="cn">扣减套数</span></th>
       </tr></thead>
       <tbody id="tb-ship"></tbody>
     </table></div>
@@ -238,7 +238,7 @@ function bundleList(items, st){
   return [...set].sort((a,b)=>{ const [ma,qa]=a.split('-'), [mb,qb]=b.split('-'); return order(ma)-order(mb) || Number(qa)-Number(qb); });
 }
 const bMat = b => b.split('-')[0], bPer = b => Number(b.split('-')[1])||0;
-const bLabel = b => b==='-' ? '-' : `<span class="badge ${esc(bMat(b))}">${esc(bMat(b))}</span> <span class="ko">${bPer(b)}장 1묶음</span><span class="cn">${bPer(b)}张/捆</span>`;
+const bLabel = b => b==='-' ? '-' : `<span class="badge ${esc(bMat(b))}">${esc(bMat(b))}</span> <span class="ko">${bPer(b)}장 1묶음</span><span class="cn">${bPer(b)}张一套</span>`;
 function shipRows(items, st){
   const map = Object.fromEntries(items.map(i=>[String(i.code), i]));
   return ships.lines.map(l=>{
@@ -280,7 +280,7 @@ function render(){
   renderStock(items, st, editing);
   renderSpec(items, editing);
 }
-const UNIT_B = '<span class="ko">묶음</span><span class="cn">捆</span>';
+const UNIT_B = '<span class="ko">묶음</span><span class="cn">套</span>';
 function renderStock(items, st, editing){
   const {rows, r, list} = calc(items, st);
   const neg = v => v<0 ? 'neg' : '';
@@ -288,7 +288,7 @@ function renderStock(items, st, editing){
     const sh = v => `<span style="font-weight:400;color:#9aa5b1;font-size:11px"> (${fmt(v*per)}<span class="ko">장</span><span class="cn">张</span>)</span>`;
     return `<div class="scard">
       <div class="title">${bLabel(b)}</div>
-      <div class="big ${neg(x.now)}">${fmt(x.now)}<small><span class="ko">묶음 남음</span><span class="cn">捆 剩余</span></small></div>
+      <div class="big ${neg(x.now)}">${fmt(x.now)}<small><span class="ko">묶음 남음</span><span class="cn">套 剩余</span></small></div>
       <div style="font-size:12px;color:var(--sub)">= ${fmt(x.now*per)} <span class="ko">장</span><span class="cn">张</span></div>
       <div class="rows">
         <span><span class="ko">시작 수량</span><span class="cn">期初</span> (${esc(st.base_date||'-')})</span><b>${fmt(x.base)}</b>
