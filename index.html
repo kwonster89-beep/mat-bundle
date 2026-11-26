@@ -86,7 +86,7 @@
 <body class="lang-both">
 <header><div class="wrap">
   <h1>매트 합포 현황 <small>配套地垫明细</small></h1>
-  <div class="meta"><span class="ko">기구별 합포 매트와 키룬 공장 매트 재고</span><span class="cn"> 各型号配套地垫及工厂地垫库存</span> · <span class="ko">무역허브 동기화</span><span class="cn"> 同步</span>: <b id="synced">-</b></div>
+  <div class="meta"><span class="ko">기구별 합포 매트와 키룬 공장 매트 재고</span><span class="cn"> 各型号配套地垫及工厂地垫库存</span> · <span class="ko">PI 갱신</span><span class="cn"> 更新</span>: <b id="synced">-</b></div>
   <nav class="tabs" id="tabs">
     <button data-v="stock" class="on">매트 재고 <span class="cn">地垫库存</span></button>
     <button data-v="spec">합포 기준표 <span class="cn">配套标准</span></button>
@@ -95,13 +95,14 @@
 
 <main class="wrap">
   <div class="editbar">
-    <b>편집 모드</b><span style="color:#8a6d1a">기준표·보낸 기록·시작 수량을 고친 뒤 저장하면 1~2분 뒤 모두에게 반영돼요. PI 차감 내역은 무역허브에서 자동으로 들어와요.</span>
+    <b>편집 모드</b><span style="color:#8a6d1a">시작 수량·보낸 기록·PI별 차감 장수·기준표를 고친 뒤 저장하면 1~2분 뒤 모두에게 반영돼요. 차감 장수 칸을 비우면 자동 계산값으로 돌아가요.</span>
     <span style="flex:1"></span>
     <button class="btn primary" id="save">저장</button>
     <button class="btn" id="cancel">취소</button>
   </div>
 
   <div class="toolbar">
+    <button class="btn primary owner-only" id="syncBtn" style="display:none">무역허브에서 PI 갱신</button>
     <span style="flex:1"></span>
     <div class="seg" id="lang">
       <button data-v="both" class="on">한/中</button><button data-v="ko">한국어</button><button data-v="cn">中文</button>
@@ -235,8 +236,10 @@ function shipRows(items, st){
   return ships.lines.map(l=>{
     const it = map[l.code] || {};
     const per = Number(it.qty)||0, mat = it.material || '-';
+    const key = l.pi + '|' + l.code, ov = st.overrides && st.overrides[key];
+    const auto = per * (Number(l.units)||0);
     let status = !l.etd ? 'pending' : (st.base_date && l.etd < st.base_date) ? 'before' : (l.etd <= todayStr ? 'done' : 'planned');
-    return {...l, it, per, mat, mats: per * (Number(l.units)||0), status};
+    return {...l, it, per, mat, key, auto, overridden: ov !== undefined && ov !== null && ov !== '', mats: (ov !== undefined && ov !== null && ov !== '') ? Number(ov) : auto, status};
   });
 }
 function calc(items, st){
@@ -313,7 +316,8 @@ function renderStock(items, st, editing){
       <td>${fmt(x.units)}</td>
       <td>${x.per}</td>
       <td>${x.mat==='-'?'-':`<span class="badge ${esc(x.mat)}">${esc(x.mat)}</span>`}</td>
-      <td class="q">${x.status==='done'?`<span class="qty minus">−${fmt(x.mats)}</span>`:`<span class="qty" style="color:#9aa5b1">${fmt(x.mats)}</span>`} <span class="ko">장</span><span class="cn">张</span></td>
+      <td class="q">${editing ? `<input type="number" min="0" class="short" data-ov="${esc(x.key)}" value="${x.overridden?esc(x.mats):''}" placeholder="${x.auto}">` :
+        (x.status==='done'?`<span class="qty minus">−${fmt(x.mats)}</span>`:`<span class="qty" style="color:#9aa5b1">${fmt(x.mats)}</span>`) + ` <span class="ko">장</span><span class="cn">张</span>` + (x.overridden?`<div style="font-size:11px;color:#8a6d1a"><span class="ko">수정됨 (자동 ${fmt(x.auto)})</span><span class="cn">已修改</span></div>`:'')}</td>
     </tr>`).join('');
 }
 function renderSpec(items, editing){
@@ -368,7 +372,7 @@ const savedTab = localStorage.getItem('matsite_tab'); if (savedTab) $(`#tabs but
 function startEdit(){
   if (loadState !== 'ok') return toast('데이터를 먼저 불러와야 해요');
   draft = JSON.parse(JSON.stringify(data.items)); sdraft = JSON.parse(JSON.stringify(stock));
-  sdraft.base = sdraft.base || {EVA:0,TPE:0}; sdraft.sent = sdraft.sent || [];
+  sdraft.base = sdraft.base || {EVA:0,TPE:0}; sdraft.sent = sdraft.sent || []; sdraft.overrides = sdraft.overrides || {};
   document.body.classList.add('editing'); render();
 }
 function stopEdit(){ draft = null; sdraft = null; document.body.classList.remove('editing'); render(); }
@@ -386,6 +390,9 @@ $('#tb-sent').addEventListener('input', e=>{ const el=e.target, tr=el.closest('t
   const x = sdraft.sent[+tr.dataset.i]; x[el.dataset.s] = el.dataset.s==='qty' ? Number(el.value) : el.value; });
 $('#tb-sent').addEventListener('change', ()=>{ if (sdraft) render(); });
 $('#tb-sent').addEventListener('click', e=>{ const d=e.target.dataset.sdel; if(d===undefined) return; if (confirm('이 기록을 삭제할까요?')){ sdraft.sent.splice(+d,1); render(); } });
+$('#tb-ship').addEventListener('change', e=>{ const el=e.target; if(!sdraft||el.dataset.ov===undefined) return;
+  if (el.value === '') delete sdraft.overrides[el.dataset.ov]; else sdraft.overrides[el.dataset.ov] = Number(el.value);
+  renderStock(draft, sdraft, true); });
 $('#addSent').addEventListener('click', ()=>{ sdraft.sent.push({date:todayStr, material:'EVA', qty:0, memo:''}); render(); });
 ['#b-date','#b-eva','#b-tpe'].forEach(id=>$(id).addEventListener('change', ()=>{ if(!sdraft) return;
   sdraft.base_date = $('#b-date').value; sdraft.base = {EVA:Number($('#b-eva').value)||0, TPE:Number($('#b-tpe').value)||0}; render(); }));
@@ -408,14 +415,33 @@ $('#save').addEventListener('click', async ()=>{
   try{
     $('#save').disabled = true; toast('저장 중...', 15000);
     const nextData = {updated: todayStr, items: draft};
-    const nextStock = {base_date: sdraft.base_date, base: sdraft.base, sent: sdraft.sent.filter(x=>x.date && Number(x.qty))};
+    const nextStock = {base_date: sdraft.base_date, base: sdraft.base, sent: sdraft.sent.filter(x=>x.date && Number(x.qty)), overrides: sdraft.overrides || {}};
     if (JSON.stringify(nextData.items) !== JSON.stringify(data.items)) await putFile('data.json', nextData, token);
     if (JSON.stringify(nextStock) !== JSON.stringify(stock)) await putFile('stock.json', nextStock, token);
     data = nextData; stock = nextStock; stopEdit(); toast('저장됐어요. 1~2분 뒤 모든 사람 화면에 반영돼요.', 4000);
   }catch(err){ toast(err.message, 5000); }
   finally{ $('#save').disabled = false; }
 });
-render(); load();
+// ---------- PI 갱신 (무역허브 북마크 버튼이 #sync= 로 데이터를 넘겨줌) ----------
+if (localStorage.getItem(TOKEN_KEY)) $('#syncBtn').style.display = '';
+$('#syncBtn').addEventListener('click', ()=>{
+  window.open('https://trade.egojinsvc.com/trade-purchase-orders', '_blank');
+  toast('열린 무역허브 탭에서 북마크바의 "매트 PI 갱신"을 눌러주세요.', 7000);
+});
+async function applySync(){
+  const m = location.hash.match(/^#sync=(.+)$/); if (!m) return;
+  history.replaceState(null, '', location.pathname + location.search);
+  let payload;
+  try { payload = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1]))))); } catch(e){ return toast('갱신 데이터를 읽지 못했어요', 5000); }
+  if (!payload || !Array.isArray(payload.lines)) return toast('갱신 데이터가 비어 있어요', 5000);
+  let token = localStorage.getItem(TOKEN_KEY);
+  if (!token){ token = prompt('PI 갱신을 저장하려면 편집 키를 입력하세요 (관리자 전용)'); if (!token) return; localStorage.setItem(TOKEN_KEY, token.trim()); token = token.trim(); }
+  try { toast('PI 내역 저장 중...', 15000); await putFile('shipments.json', payload, token);
+    ships = payload; render(); $('#syncBtn').style.display = '';
+    toast(`PI 갱신 완료: ${payload.lines.length}줄. 1~2분 뒤 모두에게 반영돼요.`, 5000);
+  } catch(err){ toast(err.message, 6000); }
+}
+render(); load().then(applySync);
 </script>
 </body>
 </html>
