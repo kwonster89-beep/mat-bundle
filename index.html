@@ -120,14 +120,30 @@ const OWNER = host.endsWith('github.io') ? host.split('.')[0] : 'kwonster89-beep
 const REPO  = host.endsWith('github.io') ? (seg[0] || OWNER + '.github.io') : 'mat-bundle';
 const FILE  = 'data.json';
 
-let data = {updated:'', items:[]}, draft = null, matF = '', q = '';
+let data = {updated:'', items:[]}, draft = null, matF = '', q = '', loadState = 'loading';
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function toast(msg, ms=2600){ const t=$('#toast'); t.textContent=msg; t.style.display='block'; clearTimeout(t._h); t._h=setTimeout(()=>t.style.display='none', ms); }
 
 async function load(){
-  const r = await fetch(FILE + '?t=' + Date.now(), {cache:'no-store'});
-  data = await r.json(); render();
+  const t = Date.now();
+  const sources = [
+    `https://${OWNER}.github.io/${REPO}/${FILE}?t=${t}`,
+    `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${FILE}?t=${t}`,
+    `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}?ref=main&t=${t}`
+  ];
+  for (const url of sources){
+    try{
+      const opt = {cache:'no-store'};
+      if (url.includes('api.github.com')) opt.headers = {Accept:'application/vnd.github.raw+json'};
+      const r = await fetch(url, opt);
+      if (!r.ok) continue;
+      const j = await r.json();
+      if (!j || !Array.isArray(j.items) || !j.items.length) continue;
+      data = j; loadState = 'ok'; render(); return;
+    }catch(e){ /* try next source */ }
+  }
+  loadState = 'fail'; render();
 }
 function stats(items){
   $('#s-all').textContent = items.length;
@@ -138,6 +154,12 @@ function stats(items){
 function render(){
   const editing = !!draft, items = editing ? draft : data.items;
   stats(data.items);
+  if (!editing && loadState !== 'ok'){
+    $('#tb').innerHTML = loadState === 'loading'
+      ? '<tr><td colspan="10" class="empty">불러오는 중... / 加载中...</td></tr>'
+      : '<tr><td colspan="10" class="empty">데이터를 불러오지 못했어요. 새로고침해 주세요. / 数据加载失败，请刷新页面。<br><button class="btn" onclick="location.reload()" style="margin-top:10px">새로고침 / 刷新</button></td></tr>';
+    return;
+  }
   document.querySelectorAll('.edit-only').forEach(e=>e.style.display = editing ? '' : 'none');
   const ql = q.trim().toLowerCase();
   const rows = items.map((it,i)=>({it,i})).filter(({it}) => editing || (
@@ -181,7 +203,7 @@ $('#lang').addEventListener('click', e=>{ const b=e.target.closest('button'); if
 const savedLang = localStorage.getItem('matsite_lang'); if (savedLang) $(`#lang button[data-v="${savedLang}"]`)?.click();
 
 // edit mode (owner only: needs a GitHub token stored in this browser)
-function startEdit(){ draft = JSON.parse(JSON.stringify(data.items)); document.body.classList.add('editing'); render(); }
+function startEdit(){ if (loadState !== 'ok') return toast('데이터를 먼저 불러와야 해요'); draft = JSON.parse(JSON.stringify(data.items)); document.body.classList.add('editing'); render(); }
 function stopEdit(){ draft = null; document.body.classList.remove('editing'); render(); }
 $('#admin').addEventListener('click', ()=>{
   if (draft) return;
@@ -216,7 +238,7 @@ $('#save').addEventListener('click', async ()=>{
   }catch(err){ toast(err.message, 5000); }
   finally{ $('#save').disabled = false; }
 });
-load().catch(()=>{ $('#tb').innerHTML='<tr><td colspan="10" class="empty">데이터를 불러오지 못했어요 / 数据加载失败</td></tr>'; });
+render(); load();
 </script>
 </body>
 </html>
