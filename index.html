@@ -119,7 +119,7 @@
       <div style="font-size:12px;color:var(--sub);max-width:380px">숫자를 고친 뒤 위의 "저장"을 눌러주세요. 기준일 이후(당일 포함) 보낸 기록과 선적된 PI만 계산에 들어가요.</div>
     </div>
     <div class="stock" id="stockCards"></div>
-    <div class="hint"><span class="ko">계산: 시작 수량 + 보낸 수량 − 선적일(ETD)이 지난 PI의 기구 대수 × 대당 매트 장수. 선적일이 아직 안 온 PI는 "선적 예정"으로 따로 보여줘요.</span><span class="cn">计算：期初数量 + 寄出数量 − 已过出货日(ETD)的PI台数 × 每台垫子张数。出货日未到的PI单独显示为“待出货”。</span></div>
+    <div class="hint"><span class="ko">계산: 시작 수량 + 보낸 수량 − 선적일(ETD)이 지난 PI의 기구 대수 × 대당 매트 장수. 선적일이 아직 안 온 PI는 "선적 예정"으로 따로 보여줘요. PI 목록은 무역허브 발주 관리에 남아 있는(입고 완료 전) PI 중 기준일 이후 것만 가져와요.</span><span class="cn">计算：期初数量 + 寄出数量 − 已过出货日(ETD)的PI台数 × 每台垫子张数。出货日未到的PI单独显示为“待出货”。</span></div>
 
 
     <h2>보낸 기록 <span class="cn">寄出记录</span> <button class="btn edit-only" id="addSent" style="margin-left:8px">+ 추가</button></h2>
@@ -306,7 +306,7 @@ function renderStock(items, st, editing){
   // shipments table
   const ql = q2.trim().toLowerCase();
   const order = {planned:0, done:1, pending:2, before:3};
-  const list = rows.filter(x => (!stF || x.status===stF) && (!ql || [x.pi,x.name,x.code,x.it.name_cn].join(' ').toLowerCase().includes(ql)))
+  const list = rows.filter(x => x.status !== 'before' && (!stF || x.status===stF) && (!ql || [x.pi,x.name,x.code,x.it.name_cn].join(' ').toLowerCase().includes(ql)))
     .sort((a,b)=> order[a.status]-order[b.status] || (a.status==='planned' ? (a.etd||'').localeCompare(b.etd||'') : (b.etd||'').localeCompare(a.etd||'')) || a.pi.localeCompare(b.pi));
   $('#tb-ship').innerHTML = !list.length ? `<tr><td colspan="8" class="empty">${ships.lines.length ? '결과 없음 / 无结果' : '무역허브 동기화 전이에요 / 尚未同步'}</td></tr>` :
     list.map(x=>`<tr class="${x.status==='before'?'muted':''}">
