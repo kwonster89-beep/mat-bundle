@@ -1,8 +1,11 @@
 {
   "base_date": "2026-11-26",
   "base": {
-    "EVA": 0,
-    "TPE": 0
+    "EVA-4": 0,
+    "EVA-5": 0,
+    "EVA-6": 0,
+    "TPE-3": 0,
+    "TPE-5": 0
   },
   "sent": [],
   "overrides": {}
