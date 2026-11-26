@@ -8,5 +8,9 @@
     "TPE-5": 0
   },
   "sent": [],
-  "overrides": {}
+  "overrides": {},
+  "closed": [
+    "EG-503D-003",
+    "EG-7068WGFC704W-001"
+  ]
 }
