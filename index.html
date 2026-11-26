@@ -283,9 +283,11 @@ function render(){
 const UNIT_B = '<span class="ko">묶음</span><span class="cn">套</span>';
 function renderStock(items, st, editing){
   const {rows, r, list} = calc(items, st);
-  const neg = v => v<0 ? 'neg' : '';
+  const neg = v => '';
+  const z = v => Math.max(0, v);
+  const short = v => v<0 ? `<div style="font-size:11px;color:#c62828;font-weight:600"><span class="ko">부족 ${fmt(-v)}묶음</span><span class="cn">缺 ${fmt(-v)}套</span></div>` : '';
   $('#stockCards').innerHTML = list.map(b=>{ const x = r[b], per = bPer(b);
-    const sh = v => `<span style="font-weight:400;color:#9aa5b1;font-size:11px"> (${fmt(v*per)}<span class="ko">장</span><span class="cn">张</span>)</span>`;
+    const sh = v => `<span style="font-weight:400;color:#9aa5b1;font-size:11px"> (${fmt(z(v)*per)}<span class="ko">장</span><span class="cn">张</span>)</span>`;
     return `<div class="scard">
       <div class="title">${bLabel(b)}</div>
       <div class="big">${fmt(z(x.now))}<small><span class="ko">묶음 남음</span><span class="cn">套 剩余</span></small></div>
