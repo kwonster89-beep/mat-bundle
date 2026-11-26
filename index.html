@@ -296,7 +296,7 @@ function renderStock(items, st, editing){
         <span><span class="ko">시작 수량</span><span class="cn">期初</span> (${esc(st.base_date||'-')})</span><b>${fmt(x.base)}</b>
         <span><span class="ko">보낸 수량</span><span class="cn">寄出</span></span><b class="plus">+${fmt(x.sent)}</b>
         <span><span class="ko">포장·선적 차감</span><span class="cn">已包装出货扣减</span></span><b class="minus">−${fmt(x.used)}</b>
-        <span><span class="ko">생산 중 발주까지 차감 후</span><span class="cn">扣除全部在产订单后</span> (−${fmt(x.pending)})</span><b>${fmt(z(x.afterAll))}${sh(x.afterAll)}${short(x.afterAll)}</b>
+        <span><span class="ko">생산 중 발주까지 차감 후</span><span class="cn">扣除全部在产订单后</span> (−${fmt(x.pending)})</span><b style="${x.afterAll<0?'color:#c62828':''}">${fmt(x.afterAll)}<span style="font-weight:400;color:${x.afterAll<0?'#c62828':'#9aa5b1'};font-size:11px"> (${fmt(x.afterAll*per)}<span class="ko">장</span><span class="cn">张</span>)</span></b>
       </div></div>`; }).join('');
 
   // base inputs
