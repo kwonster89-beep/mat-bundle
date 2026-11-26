@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>매트 합포 현황 · 配套地垫明细</title>
+<style>
+  :root{
+    --bg:#f5f7fa; --card:#fff; --line:#e3e8ef; --text:#1f2933; --sub:#6b7785;
+    --brand:#2f5597; --brand-soft:#e8eef8;
+    --eva:#2e7d32; --eva-bg:#e6f4e7; --tpe:#c2571a; --tpe-bg:#fdeee3;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Pretendard","Malgun Gothic","맑은 고딕","Microsoft YaHei","PingFang SC",system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+  header{background:var(--brand);color:#fff;padding:22px 20px 18px}
+  .wrap{max-width:1180px;margin:0 auto}
+  h1{margin:0;font-size:22px;font-weight:700;letter-spacing:-.3px}
+  h1 small{font-weight:400;opacity:.85;font-size:16px;margin-left:6px}
+  .meta{margin-top:6px;font-size:12.5px;opacity:.85}
+  main{padding:18px 20px 40px}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .stat .k{font-size:12px;color:var(--sub)}
+  .stat .v{font-size:22px;font-weight:700;margin-top:2px}
+  .stat.eva .v{color:var(--eva)} .stat.tpe .v{color:var(--tpe)}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+  .search{flex:1 1 260px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:#fff}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
+  .seg button{border:0;background:none;padding:8px 12px;font-size:13px;cursor:pointer;color:var(--sub);font-family:inherit}
+  .seg button.on{background:var(--brand-soft);color:var(--brand);font-weight:700}
+  .tablebox{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:auto}
+  table{width:100%;border-collapse:collapse;min-width:860px}
+  th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:center;vertical-align:middle}
+  th{background:#f0f3f8;font-size:12.5px;color:#3d4a5a;position:sticky;top:0;z-index:1;white-space:nowrap}
+  th .cn,td .cn{display:block;color:var(--sub);font-size:12px;margin-top:1px}
+  td.name{text-align:left}
+  td.name .ko{font-weight:600}
+  tbody tr:hover{background:#fafbfd}
+  .badge{display:inline-block;min-width:44px;padding:3px 8px;border-radius:999px;font-weight:700;font-size:12px}
+  .badge.EVA{background:var(--eva-bg);color:var(--eva)} .badge.TPE{background:var(--tpe-bg);color:var(--tpe)}
+  .qty{font-size:17px;font-weight:700}
+  td.q{white-space:nowrap} td.q .cn{display:inline;margin:0 0 0 2px;font-size:12px}
+  .code{font-family:Consolas,monospace;color:#44505e}
+  body.lang-ko .cn{display:none!important}
+  body.lang-cn .ko{display:none!important}
+  body.lang-cn th .cn,body.lang-cn td .cn{color:inherit;font-size:inherit;margin:0}
+  .empty{padding:30px;text-align:center;color:var(--sub)}
+  footer{max-width:1180px;margin:0 auto;padding:0 20px 30px;color:var(--sub);font-size:12px;display:flex;justify-content:space-between}
+  footer a{color:var(--sub);cursor:pointer;text-decoration:none}
+  /* edit mode */
+  .editbar{display:none;gap:8px;align-items:center;background:#fff8e1;border:1px solid #f1d48a;border-radius:8px;padding:8px 12px;margin-bottom:12px}
+  body.editing .editbar{display:flex}
+  .btn{border:1px solid var(--line);background:#fff;border-radius:7px;padding:7px 12px;font-size:13px;cursor:pointer;font-family:inherit}
+  .btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .btn.danger{color:#c62828}
+  td input,td select{width:100%;padding:5px 6px;border:1px solid #cfd6e0;border-radius:5px;font-size:13px;font-family:inherit}
+  td input.short{width:70px}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#263238;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;display:none;z-index:9}
+  @media (max-width:640px){
+    .stats{grid-template-columns:repeat(3,1fr)} .stat .v{font-size:18px}
+    h1{font-size:18px} h1 small{display:block;margin:2px 0 0}
+  }
+</style>
+</head>
+<body class="lang-both">
+<header><div class="wrap">
+  <h1>매트 합포 현황 <small>配套地垫明细</small></h1>
+  <div class="meta"><span class="ko">기구별 합포 매트 종류와 수량</span> <span class="cn">各型号配套地垫类型及数量</span> · <span class="ko">업데이트</span><span class="cn"> 更新</span>: <b id="updated">-</b></div>
+</div></header>
+
+<main class="wrap">
+  <div class="stats">
+    <div class="stat"><div class="k">전체 상품 <span class="cn">全部型号</span></div><div class="v" id="s-all">-</div></div>
+    <div class="stat eva"><div class="k">EVA 매트 <span class="cn">EVA 垫子</span></div><div class="v" id="s-eva">-</div></div>
+    <div class="stat tpe"><div class="k">TPE 매트 <span class="cn">TPE 防滑垫</span></div><div class="v" id="s-tpe">-</div></div>
+  </div>
+
+  <div class="editbar">
+    <b>편집 모드</b><span style="color:#8a6d1a">수정 후 저장을 누르면 1~2분 뒤 모든 사람 화면에 반영돼요.</span>
+    <span style="flex:1"></span>
+    <button class="btn" id="add">+ 행 추가</button>
+    <button class="btn primary" id="save">저장</button>
+    <button class="btn" id="cancel">취소</button>
+  </div>
+
+  <div class="toolbar">
+    <input class="search" id="q" placeholder="코드·상품명 검색 / 搜索编码·产品名称">
+    <div class="seg" id="mat">
+      <button data-v="" class="on">전체 全部</button><button data-v="EVA">EVA</button><button data-v="TPE">TPE</button>
+    </div>
+    <div class="seg" id="lang">
+      <button data-v="both" class="on">한/中</button><button data-v="ko">한국어</button><button data-v="cn">中文</button>
+    </div>
+  </div>
+
+  <div class="tablebox"><table>
+    <thead><tr>
+      <th>No</th>
+      <th><span class="ko">어드민코드</span><span class="cn">产品编码</span></th>
+      <th style="text-align:left"><span class="ko">상품명</span><span class="cn">产品名称</span></th>
+      <th><span class="ko">카테고리</span><span class="cn">类别</span></th>
+      <th><span class="ko">매트 종류</span><span class="cn">垫子类型</span></th>
+      <th><span class="ko">재질</span><span class="cn">材质</span></th>
+      <th><span class="ko">규격</span><span class="cn">规格</span></th>
+      <th><span class="ko">합포 수량</span><span class="cn">配套数量</span></th>
+      <th><span class="ko">비고</span><span class="cn">备注</span></th>
+      <th class="edit-only" style="display:none"></th>
+    </tr></thead>
+    <tbody id="tb"></tbody>
+  </table></div>
+</main>
+<footer><span>EVA · TPE</span><a id="admin" title="관리">관리</a></footer>
+<div class="toast" id="toast"></div>
+
+<script>
+const TOKEN_KEY = 'matsite_token';
+const host = location.hostname, seg = location.pathname.split('/').filter(Boolean);
+const OWNER = host.endsWith('github.io') ? host.split('.')[0] : 'kwonster89-beep';
+const REPO  = host.endsWith('github.io') ? (seg[0] || OWNER + '.github.io') : 'mat-bundle';
+const FILE  = 'data.json';
+
+let data = {updated:'', items:[]}, draft = null, matF = '', q = '';
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(msg, ms=2600){ const t=$('#toast'); t.textContent=msg; t.style.display='block'; clearTimeout(t._h); t._h=setTimeout(()=>t.style.display='none', ms); }
+
+async function load(){
+  const r = await fetch(FILE + '?t=' + Date.now(), {cache:'no-store'});
+  data = await r.json(); render();
+}
+function stats(items){
+  $('#s-all').textContent = items.length;
+  $('#s-eva').textContent = items.filter(i=>i.material==='EVA').length;
+  $('#s-tpe').textContent = items.filter(i=>i.material==='TPE').length;
+  $('#updated').textContent = data.updated || '-';
+}
+function render(){
+  const editing = !!draft, items = editing ? draft : data.items;
+  stats(data.items);
+  document.querySelectorAll('.edit-only').forEach(e=>e.style.display = editing ? '' : 'none');
+  const ql = q.trim().toLowerCase();
+  const rows = items.map((it,i)=>({it,i})).filter(({it}) => editing || (
+    (!matF || it.material===matF) &&
+    (!ql || [it.code,it.name_ko,it.name_cn,it.cat_ko,it.cat_cn,it.type_ko,it.type_cn].join(' ').toLowerCase().includes(ql))));
+  if (!rows.length){ $('#tb').innerHTML = '<tr><td colspan="10" class="empty">결과 없음 / 无结果</td></tr>'; return; }
+  $('#tb').innerHTML = rows.map(({it,i},n) => editing ? `
+    <tr data-i="${i}">
+      <td>${n+1}</td>
+      <td><input class="short" data-k="code" value="${esc(it.code)}"></td>
+      <td class="name"><input data-k="name_ko" value="${esc(it.name_ko)}" placeholder="상품명"><input data-k="name_cn" value="${esc(it.name_cn)}" placeholder="产品名称" style="margin-top:3px"></td>
+      <td><input data-k="cat_ko" value="${esc(it.cat_ko)}"><input data-k="cat_cn" value="${esc(it.cat_cn)}" style="margin-top:3px"></td>
+      <td><input data-k="type_ko" value="${esc(it.type_ko)}"><input data-k="type_cn" value="${esc(it.type_cn)}" style="margin-top:3px"></td>
+      <td><select data-k="material">${['EVA','TPE','기타'].map(m=>`<option ${m===it.material?'selected':''}>${m}</option>`).join('')}</select></td>
+      <td><input data-k="spec" value="${esc(it.spec)}"></td>
+      <td><input class="short" type="number" min="0" data-k="qty" value="${esc(it.qty)}"></td>
+      <td><input data-k="note" value="${esc(it.note)}"></td>
+      <td><button class="btn danger" data-del="${i}">삭제</button></td>
+    </tr>` : `
+    <tr>
+      <td>${n+1}</td>
+      <td class="code">${esc(it.code)}</td>
+      <td class="name"><span class="ko">${esc(it.name_ko)}</span><span class="cn">${esc(it.name_cn)}</span></td>
+      <td><span class="ko">${esc(it.cat_ko)}</span><span class="cn">${esc(it.cat_cn)}</span></td>
+      <td><span class="ko">${esc(it.type_ko)}</span><span class="cn">${esc(it.type_cn)}</span></td>
+      <td><span class="badge ${esc(it.material)}">${esc(it.material)}</span></td>
+      <td>${esc(it.spec)}</td>
+      <td class="q"><span class="qty">${esc(it.qty)}</span> <span class="ko">장</span><span class="cn">张</span></td>
+      <td style="text-align:left">${esc(it.note)}</td>
+      <td class="edit-only" style="display:none"></td>
+    </tr>`).join('');
+}
+
+// filters
+$('#q').addEventListener('input', e=>{ q=e.target.value; render(); });
+$('#mat').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return;
+  matF=b.dataset.v; [...$('#mat').children].forEach(x=>x.classList.toggle('on', x===b)); render(); });
+$('#lang').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return;
+  document.body.classList.remove('lang-both','lang-ko','lang-cn'); document.body.classList.add('lang-'+b.dataset.v);
+  [...$('#lang').children].forEach(x=>x.classList.toggle('on', x===b)); localStorage.setItem('matsite_lang', b.dataset.v); });
+const savedLang = localStorage.getItem('matsite_lang'); if (savedLang) $(`#lang button[data-v="${savedLang}"]`)?.click();
+
+// edit mode (owner only: needs a GitHub token stored in this browser)
+function startEdit(){ draft = JSON.parse(JSON.stringify(data.items)); document.body.classList.add('editing'); render(); }
+function stopEdit(){ draft = null; document.body.classList.remove('editing'); render(); }
+$('#admin').addEventListener('click', ()=>{
+  if (draft) return;
+  if (!localStorage.getItem(TOKEN_KEY)){
+    const t = prompt('편집 키를 입력하세요 (관리자 전용)'); if (!t) return;
+    localStorage.setItem(TOKEN_KEY, t.trim());
+  }
+  startEdit();
+});
+$('#tb').addEventListener('input', e=>{ const el=e.target, tr=el.closest('tr'); if(!draft||!tr||!el.dataset.k) return;
+  const it = draft[+tr.dataset.i]; it[el.dataset.k] = el.dataset.k==='qty' ? Number(el.value) : el.value; });
+$('#tb').addEventListener('click', e=>{ const d=e.target.dataset.del; if(d===undefined) return;
+  if (confirm('이 행을 삭제할까요?')){ draft.splice(+d,1); render(); } });
+$('#add').addEventListener('click', ()=>{ draft.push({code:'',name_ko:'',name_cn:'',cat_ko:'',cat_cn:'',type_ko:'EVA 조각매트',type_cn:'EVA 垫子',material:'EVA',spec:'10x10cm / 10T',qty:0,note:''}); render(); });
+$('#cancel').addEventListener('click', stopEdit);
+$('#save').addEventListener('click', async ()=>{
+  const token = localStorage.getItem(TOKEN_KEY); if (!token) return toast('편집 키가 없어요');
+  const api = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`;
+  const h = {Authorization:'Bearer '+token, Accept:'application/vnd.github+json'};
+  try{
+    $('#save').disabled = true; toast('저장 중...', 10000);
+    const cur = await fetch(api + '?t=' + Date.now(), {headers:h, cache:'no-store'});
+    if (cur.status===401||cur.status===403||cur.status===404){ localStorage.removeItem(TOKEN_KEY); throw new Error('편집 키가 맞지 않아요 ('+cur.status+')'); }
+    const {sha} = await cur.json();
+    const d = new Date(), pad=n=>String(n).padStart(2,'0');
+    const next = {updated:`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`, items: draft};
+    const body = JSON.stringify(next, null, 2) + '\n';
+    const b64 = btoa(String.fromCharCode(...new TextEncoder().encode(body)));
+    const r = await fetch(api, {method:'PUT', headers:h, body: JSON.stringify({message:'매트 합포 현황 수정', content:b64, sha})});
+    if (!r.ok) throw new Error('저장 실패 ('+r.status+')');
+    data = next; stopEdit(); toast('저장됐어요. 1~2분 뒤 모든 사람 화면에 반영돼요.', 4000);
+  }catch(err){ toast(err.message, 5000); }
+  finally{ $('#save').disabled = false; }
+});
+load().catch(()=>{ $('#tb').innerHTML='<tr><td colspan="10" class="empty">데이터를 불러오지 못했어요 / 数据加载失败</td></tr>'; });
+</script>
+</body>
+</html>
