@@ -103,6 +103,7 @@
 
   <div class="toolbar">
     <button class="btn primary owner-only" id="syncBtn" style="display:none">무역허브에서 PI 갱신</button>
+    <button class="btn owner-only" id="editBtn" style="display:none">✎ 시작 수량·보낸 기록 편집</button>
     <span style="flex:1"></span>
     <div class="seg" id="lang">
       <button data-v="both" class="on">한/中</button><button data-v="ko">한국어</button><button data-v="cn">中文</button>
@@ -111,15 +112,15 @@
 
   <!-- 매트 재고 -->
   <section class="view on" id="v-stock">
-    <div class="stock" id="stockCards"></div>
-    <div class="hint"><span class="ko">계산: 시작 수량 + 보낸 수량 − 선적일(ETD)이 지난 PI의 기구 대수 × 대당 매트 장수. 선적일이 아직 안 온 PI는 "선적 예정"으로 따로 보여줘요.</span><span class="cn">计算：期初数量 + 寄出数量 − 已过出货日(ETD)的PI台数 × 每台垫子张数。出货日未到的PI单独显示为“待出货”。</span></div>
-
-    <div class="basebox" id="basebox">
+    <div class="basebox" id="basebox" style="margin:0 0 12px">
       <div class="field">기준일 (이날 기준 공장 보유)<input type="date" id="b-date"></div>
       <div class="field">기준일 EVA 보유 (장)<input type="number" min="0" id="b-eva"></div>
       <div class="field">기준일 TPE 보유 (장)<input type="number" min="0" id="b-tpe"></div>
-      <div style="font-size:12px;color:var(--sub);max-width:380px">기준일 이후(당일 포함) 보낸 기록과 선적된 PI만 계산에 들어가요.</div>
+      <div style="font-size:12px;color:var(--sub);max-width:380px">숫자를 고친 뒤 위의 "저장"을 눌러주세요. 기준일 이후(당일 포함) 보낸 기록과 선적된 PI만 계산에 들어가요.</div>
     </div>
+    <div class="stock" id="stockCards"></div>
+    <div class="hint"><span class="ko">계산: 시작 수량 + 보낸 수량 − 선적일(ETD)이 지난 PI의 기구 대수 × 대당 매트 장수. 선적일이 아직 안 온 PI는 "선적 예정"으로 따로 보여줘요.</span><span class="cn">计算：期初数量 + 寄出数量 − 已过出货日(ETD)的PI台数 × 每台垫子张数。出货日未到的PI单独显示为“待出货”。</span></div>
+
 
     <h2>보낸 기록 <span class="cn">寄出记录</span> <button class="btn edit-only" id="addSent" style="margin-left:8px">+ 추가</button></h2>
     <div class="tablebox"><table>
@@ -423,7 +424,13 @@ $('#save').addEventListener('click', async ()=>{
   finally{ $('#save').disabled = false; }
 });
 // ---------- PI 갱신 (무역허브 북마크 버튼이 #sync= 로 데이터를 넘겨줌) ----------
-if (localStorage.getItem(TOKEN_KEY)) $('#syncBtn').style.display = '';
+if (localStorage.getItem(TOKEN_KEY)) { $('#syncBtn').style.display = ''; $('#editBtn').style.display = ''; }
+$('#editBtn').addEventListener('click', ()=>{
+  if (!draft) startEdit();
+  if (!draft) return;
+  $('#tabs button[data-v="stock"]').click();
+  window.scrollTo({top:0, behavior:'smooth'}); setTimeout(()=>$('#b-eva').focus(), 300);
+});
 $('#syncBtn').addEventListener('click', ()=>{
   window.open('https://trade.egojinsvc.com/trade-purchase-orders', '_blank');
   toast('열린 무역허브 탭에서 북마크바의 "매트 PI 갱신"을 눌러주세요.', 7000);
@@ -437,7 +444,7 @@ async function applySync(){
   let token = localStorage.getItem(TOKEN_KEY);
   if (!token){ token = prompt('PI 갱신을 저장하려면 편집 키를 입력하세요 (관리자 전용)'); if (!token) return; localStorage.setItem(TOKEN_KEY, token.trim()); token = token.trim(); }
   try { toast('PI 내역 저장 중...', 15000); await putFile('shipments.json', payload, token);
-    ships = payload; render(); $('#syncBtn').style.display = '';
+    ships = payload; render(); $('#syncBtn').style.display = ''; $('#editBtn').style.display = '';
     toast(`PI 갱신 완료: ${payload.lines.length}줄. 1~2분 뒤 모두에게 반영돼요.`, 5000);
   } catch(err){ toast(err.message, 6000); }
 }
