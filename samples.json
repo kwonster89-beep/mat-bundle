@@ -1,0 +1,73 @@
+{
+  "updated": "2026-11-26",
+  "rows": [
+    {
+      "product": "950R 最终样品",
+      "date": "26.07.27",
+      "ready": "",
+      "note": "10月份得生产大货，最终样品得尽快发出",
+      "done": true,
+      "images": [
+        "img/s-r3-c1-1.jpg"
+      ]
+    },
+    {
+      "product": "906R 轴承测试",
+      "date": "26.07.22",
+      "ready": "",
+      "note": "906R轴承及轴承套测试事项\n轴承规格 : 磁控轮 :2个轴承都用C&U 6001 2RS / 五通管 : C&U 6003 2RS\n\n- 测试标准:\n踏板旋转次数: 旋转 300,000 次以上\n踏板承重载荷: 80 kg\n阻力调节: 10 档\n26.10.15 测试完毕",
+      "done": true,
+      "images": []
+    },
+    {
+      "product": "503D 白色饰盖样品",
+      "date": "26.08.12",
+      "ready": "",
+      "note": "503D饰盖准备白色样品 （同链罩颜色一样白）",
+      "done": true,
+      "images": [
+        "img/s-r5-c1-0.jpg",
+        "img/s-r5-c6-3.jpg"
+      ]
+    },
+    {
+      "product": "950R 网垫，网布",
+      "date": "26.08.31",
+      "ready": "",
+      "note": "网布：网布样品寄给头垫厂家找\n\n网垫边框： 按照头垫塑料件来重新调整颜色",
+      "done": false,
+      "images": [
+        "img/s-r6-c1-2.jpg"
+      ]
+    },
+    {
+      "product": "503D 铝滑轮样品",
+      "date": "26.09.29",
+      "ready": "",
+      "note": "EG-906WGFC-046 入库",
+      "done": true,
+      "images": []
+    },
+    {
+      "product": "蓝牙模块改成运动秀 V3X模块（遮蔽罩）",
+      "date": "26.09.29",
+      "ready": "",
+      "note": "已出",
+      "done": false,
+      "images": [
+        "img/s-r8-c1-4.jpg"
+      ]
+    },
+    {
+      "product": "BC66003",
+      "date": "26.11.23",
+      "ready": "",
+      "note": "DSC03670电子表，不带脉搏，带运动秀蓝牙，连接后要息屏，带运动秀V3X模块(带遮蔽罩)，全视角，电子表不带声音， 大网垫+皮革坐垫，906的刹车方式，双向内磁4KGS",
+      "done": false,
+      "images": [
+        "img/s-r9-c1-5.jpg",
+        "img/s-r9-c1-6.jpg"
+      ]
+    }
+  ]
+}
