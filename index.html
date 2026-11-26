@@ -57,7 +57,7 @@
   .badge.EVA{background:var(--eva-bg);color:var(--eva)} .badge.TPE{background:var(--tpe-bg);color:var(--tpe)}
   .st{display:inline-block;padding:3px 8px;border-radius:6px;font-size:12px;font-weight:700;white-space:nowrap}
   .st.done{background:#e8eef8;color:var(--brand)} .st.planned{background:#fff4d6;color:#8a6d1a}
-  .st.pending{background:#eef1f4;color:#6b7785} .st.before{background:#f3f3f3;color:#9aa5b1}
+  .st.closed{background:#eef6ee;color:#2e7d32} .st.pending{background:#eef1f4;color:#6b7785} .st.before{background:#f3f3f3;color:#9aa5b1}
   .qty{font-size:17px;font-weight:700}
   td.q{white-space:nowrap} td.q .cn{display:inline;margin:0 0 0 2px;font-size:12px}
   .code{font-family:Consolas,monospace;color:#44505e}
@@ -118,7 +118,7 @@
       <div style="font-size:12px;color:var(--sub);max-width:380px">숫자를 고친 뒤 위의 "저장"을 눌러주세요. 기준일 이후(당일 포함) 보낸 기록과 선적된 PI만 계산에 들어가요.</div>
     </div>
     <div class="stock" id="stockCards"></div>
-    <div class="hint"><span class="ko">계산(묶음 단위, 기구 1대 = 1묶음): 시작 수량 + 보낸 수량 − 선적일(ETD)이 지난 PI의 기구 대수. 선적일이 아직 안 온 PI는 "선적 예정"으로 따로 보여줘요. PI 목록은 무역허브 발주 관리에 남아 있는(입고 완료 전) PI 중 기준일 이후 것만 가져와요.</span><span class="cn">计算（按套，每台一套）：期初数量 + 寄出数量 − 已过出货日(ETD)的PI台数。出货日未到的PI单独显示为“待出货”。</span></div>
+    <div class="hint"><span class="ko">계산(묶음 단위, 기구 1대 = 1묶음): 시작 수량 + 보낸 수량 − 선적일(ETD)이 잡힌(포장 끝난) PI의 기구 대수. "차감 끝" PI는 이미 시작 수량에 반영된 것으로 보고 빼지 않아요. 생산 중(선적일 미정) PI는 마지막 줄에서 미리 계산만 해요. PI 목록은 무역허브 발주 관리에 남아 있는(입고 완료 전) PI 중 기준일 이후 것만 가져와요.</span><span class="cn">计算（按套，每台一套）：期初数量 + 寄出数量 − 已定出货日（已包装）的PI台数。“已结清”的PI视为已计入期初数量，不再扣减。</span></div>
 
 
     <h2>보낸 기록 <span class="cn">寄出记录</span> <button class="btn edit-only" id="addSent" style="margin-left:8px">+ 추가</button></h2>
@@ -139,7 +139,7 @@
       <div class="seg" id="stf">
         <button data-v="" class="on">전체 全部</button>
         <button data-v="done">차감됨 已扣</button>
-        <button data-v="planned">선적 예정 待出货</button>
+        <button data-v="closed">차감 끝 已结清</button>
         <button data-v="pending">선적일 미정 未定</button>
       </div>
     </div>
@@ -247,7 +247,7 @@ function shipRows(items, st){
     const key = l.pi + '|' + l.code, ov = st.overrides && st.overrides[key];
     const auto = Number(l.units)||0;
     const overridden = ov !== undefined && ov !== null && ov !== '';
-    const status = !l.etd ? 'pending' : (st.base_date && l.etd < st.base_date) ? 'before' : (l.etd <= todayStr ? 'done' : 'planned');
+    const status = (st.closed||[]).includes(l.pi) ? 'closed' : !l.etd ? 'pending' : (st.base_date && l.etd < st.base_date) ? 'before' : 'done';
     const bundles = overridden ? Number(ov) : auto;
     return {...l, it, bundle, per, key, auto, overridden, bundles, sheets: bundles*per, status};
   });
@@ -258,15 +258,15 @@ function calc(items, st){
     const base = Number(st.base?.[b])||0;
     const sent = (st.sent||[]).filter(x=>x.bundle===b && (!st.base_date || (x.date||'') >= st.base_date)).reduce((a,x)=>a+(Number(x.qty)||0),0);
     const sum = s => rows.filter(x=>x.bundle===b && x.status===s).reduce((a,x)=>a+x.bundles,0);
-    const used = sum('done'), planned = sum('planned'), pending = sum('pending');
+    const used = sum('done'), pending = sum('pending');
     const now = base + sent - used;
-    r[b] = {base, sent, used, planned, pending, now, afterPlanned: now - planned, afterAll: now - planned - pending};
+    r[b] = {base, sent, used, pending, now, afterAll: now - pending};
   }
   return {rows, r, list};
 }
 
 // ---------- render ----------
-const ST_LABEL = {done:['차감됨','已扣减'], planned:['선적 예정','待出货'], pending:['선적일 미정','出货日未定'], before:['기준일 이전','期初前']};
+const ST_LABEL = {done:['차감됨','已扣减'], closed:['차감 끝','已结清'], pending:['선적일 미정','出货日未定'], before:['기준일 이전','期初前']};
 function render(){
   const editing = !!draft;
   const items = editing ? draft : data.items, st = editing ? sdraft : stock;
@@ -295,8 +295,7 @@ function renderStock(items, st, editing){
       <div class="rows">
         <span><span class="ko">시작 수량</span><span class="cn">期初</span> (${esc(st.base_date||'-')})</span><b>${fmt(x.base)}</b>
         <span><span class="ko">보낸 수량</span><span class="cn">寄出</span></span><b class="plus">+${fmt(x.sent)}</b>
-        <span><span class="ko">선적 차감</span><span class="cn">已出货扣减</span></span><b class="minus">−${fmt(x.used)}</b>
-        <span><span class="ko">선적 예정분 차감 후</span><span class="cn">扣除待出货后</span> (−${fmt(x.planned)})</span><b>${fmt(z(x.afterPlanned))}${sh(x.afterPlanned)}${short(x.afterPlanned)}</b>
+        <span><span class="ko">포장·선적 차감</span><span class="cn">已包装出货扣减</span></span><b class="minus">−${fmt(x.used)}</b>
         <span><span class="ko">생산 중 발주까지 차감 후</span><span class="cn">扣除全部在产订单后</span> (−${fmt(x.pending)})</span><b>${fmt(z(x.afterAll))}${sh(x.afterAll)}${short(x.afterAll)}</b>
       </div></div>`; }).join('');
 
@@ -321,14 +320,14 @@ function renderStock(items, st, editing){
 
   // shipments table
   const ql = q2.trim().toLowerCase();
-  const order = {planned:0, done:1, pending:2, before:3};
+  const order = {done:0, pending:1, closed:2, before:3};
   const rowsShown = rows.filter(x => x.status !== 'before' && (!stF || x.status===stF) && (!ql || [x.pi,x.name,x.code,x.it.name_cn].join(' ').toLowerCase().includes(ql)))
-    .sort((a,b)=> order[a.status]-order[b.status] || (a.status==='planned' ? (a.etd||'').localeCompare(b.etd||'') : (b.etd||'').localeCompare(a.etd||'')) || a.pi.localeCompare(b.pi));
+    .sort((a,b)=> order[a.status]-order[b.status] || (b.etd||'').localeCompare(a.etd||'') || a.pi.localeCompare(b.pi));
   $('#tb-ship').innerHTML = !rowsShown.length ? `<tr><td colspan="7" class="empty">${ships.lines.length ? '결과 없음 / 无结果' : 'PI 갱신 전이에요 / 尚未同步'}</td></tr>` :
     rowsShown.map(x=>`<tr>
       <td class="code">${esc(x.pi)}</td>
       <td>${esc(x.etd||'-')}</td>
-      <td><span class="st ${x.status}"><span class="ko">${ST_LABEL[x.status][0]}</span><span class="cn">${ST_LABEL[x.status][1]}</span></span></td>
+      <td><span class="st ${x.status}"><span class="ko">${ST_LABEL[x.status][0]}</span><span class="cn">${ST_LABEL[x.status][1]}</span></span>${editing ? `<label style="display:block;font-size:11px;margin-top:4px;white-space:nowrap"><input type="checkbox" data-close="${esc(x.pi)}" ${x.status==='closed'?'checked':''} style="width:auto"> 차감 끝</label>` : ''}</td>
       <td class="name"><span class="ko">${esc(x.it.name_ko||x.name)}</span><span class="cn">${esc(x.it.name_cn||'')}</span></td>
       <td>${fmt(x.units)}</td>
       <td style="white-space:nowrap">${bLabel(x.bundle)}</td>
@@ -388,7 +387,7 @@ const savedTab = localStorage.getItem('matsite_tab'); if (savedTab) $(`#tabs but
 function startEdit(){
   if (loadState !== 'ok') return toast('데이터를 먼저 불러와야 해요');
   draft = JSON.parse(JSON.stringify(data.items)); sdraft = JSON.parse(JSON.stringify(stock));
-  sdraft.base = sdraft.base || {}; sdraft.sent = sdraft.sent || []; sdraft.overrides = sdraft.overrides || {};
+  sdraft.base = sdraft.base || {}; sdraft.sent = sdraft.sent || []; sdraft.overrides = sdraft.overrides || {}; sdraft.closed = sdraft.closed || [];
   document.body.classList.add('editing'); render();
 }
 function stopEdit(){ draft = null; sdraft = null; document.body.classList.remove('editing'); render(); }
@@ -406,7 +405,9 @@ $('#tb-sent').addEventListener('input', e=>{ const el=e.target, tr=el.closest('t
   const x = sdraft.sent[+tr.dataset.i]; x[el.dataset.s] = el.dataset.s==='qty' ? Number(el.value) : el.value; });
 $('#tb-sent').addEventListener('change', ()=>{ if (sdraft) render(); });
 $('#tb-sent').addEventListener('click', e=>{ const d=e.target.dataset.sdel; if(d===undefined) return; if (confirm('이 기록을 삭제할까요?')){ sdraft.sent.splice(+d,1); render(); } });
-$('#tb-ship').addEventListener('change', e=>{ const el=e.target; if(!sdraft||el.dataset.ov===undefined) return;
+$('#tb-ship').addEventListener('change', e=>{ const el=e.target; if(!sdraft) return;
+  if (el.dataset.close !== undefined){ const p = el.dataset.close; sdraft.closed = (sdraft.closed||[]).filter(x=>x!==p); if (el.checked) sdraft.closed.push(p); renderStock(draft, sdraft, true); return; }
+  if (el.dataset.ov===undefined) return;
   if (el.value === '') delete sdraft.overrides[el.dataset.ov]; else sdraft.overrides[el.dataset.ov] = Number(el.value);
   renderStock(draft, sdraft, true); });
 $('#addSent').addEventListener('click', ()=>{ sdraft.sent.push({date:todayStr, bundle: bundleList(draft, sdraft)[0] || 'EVA-5', qty:0, memo:''}); render(); });
@@ -431,7 +432,7 @@ $('#save').addEventListener('click', async ()=>{
   try{
     $('#save').disabled = true; toast('저장 중...', 15000);
     const nextData = {updated: todayStr, items: draft};
-    const nextStock = {base_date: sdraft.base_date, base: sdraft.base, sent: sdraft.sent.filter(x=>x.date && Number(x.qty)), overrides: sdraft.overrides || {}};
+    const nextStock = {base_date: sdraft.base_date, base: sdraft.base, sent: sdraft.sent.filter(x=>x.date && Number(x.qty)), overrides: sdraft.overrides || {}, closed: sdraft.closed || []};
     if (JSON.stringify(nextData.items) !== JSON.stringify(data.items)) await putFile('data.json', nextData, token);
     if (JSON.stringify(nextStock) !== JSON.stringify(stock)) await putFile('stock.json', nextStock, token);
     data = nextData; stock = nextStock; stopEdit(); toast('저장됐어요. 1~2분 뒤 모든 사람 화면에 반영돼요.', 4000);
